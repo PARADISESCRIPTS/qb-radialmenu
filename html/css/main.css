@@ -81,7 +81,7 @@ svg.menu > g.sector > use {
     margin-top: 5px;
     cursor: pointer;
     fill: white;
-    font-size: 6px;  /* Added explicit font size for sector icons */
+    font-size: 6px;
     letter-spacing: 0.2px;
     text-transform: uppercase;
 }
@@ -110,7 +110,6 @@ svg.menu > g.center:hover > path {
 svg.menu > g.center > text,
 svg.menu > g.center > use {
     margin-top: 5px;
-    font-size: 20px;  /* Increased from 3px to 4px to match sector icons */
     cursor: pointer;
     fill: white;
     opacity: 0;
