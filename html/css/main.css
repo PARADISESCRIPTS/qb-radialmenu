@@ -81,7 +81,7 @@ svg.menu > g.sector > use {
     margin-top: 5px;
     cursor: pointer;
     fill: white;
-    /* Base font size is set dynamically in JavaScript */
+     font-size: 6px;
     letter-spacing: 0.2px;
     text-transform: uppercase;
 }
