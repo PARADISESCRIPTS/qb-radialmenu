@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400&display=swap');
 
 h1 {
     font-weight: normal;
@@ -15,7 +16,7 @@ div.info * {
 
 #icons {
     display: none;
-    filter: url(#drop-shadow);
+    filter:url(#drop-shadow);
 }
 
 .container {
@@ -35,7 +36,7 @@ div.menuHolder {
     right: 0;
     margin-left: auto;
     margin-right: auto;
-    top: 30%;
+    top: 35%;
 }
 
 svg.icons {
@@ -45,7 +46,7 @@ svg.icons {
 svg.menu {
     position: absolute;
     overflow: visible;
-    transition: 0.1s;
+    transition: .1s;
     transition-timing-function: ease-out;
 }
 
@@ -61,41 +62,72 @@ svg.menu.outer {
 }
 
 svg.menu > g > path {
-    fill: rgb(23 23 23 / 80%);
+    fill: rgba(36, 36, 36, 0.664);
+    stroke: rgba(100, 100, 100, 0.28);
+    stroke-width: 0.5px;
 }
 
 svg.menu > g.sector > path {
     cursor: pointer;
+    fill: #1f1f1f;
+    stroke: rgba(245, 242, 242, 0.301);
+    stroke-width: 1px;
+    transition: transform 0.3s ease, fill 0.3s ease;
 }
 
 svg.menu > g.sector > text,
 svg.menu > g.sector > use {
-    font-family: "Poppins", sans-serif;
+    font-family: 'Cairo', sans-serif;
     margin-top: 5px;
-    font-size: 2.8px;
-    letter-spacing: 0.2px;
-    text-transform: uppercase;
     cursor: pointer;
     fill: white;
+    /* Base font size is set dynamically in JavaScript */
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
 }
 
 svg.menu > g.sector:hover > path {
-    fill: #dc143c;
+    fill: rgba(173, 216, 230, 0.51);
+    stroke: #ADD8E6;
+    stroke-width: 0.5px;
+    filter: drop-shadow(0px 0px 10px rgba(173, 216, 230, 0.8));
+    transform: scale(1.05);
 }
 
-svg.menu > g.center:hover > circle {
-    fill: #dc143c;
-}
-
-svg.menu > g.center > circle {
+svg.menu > g.center > path {
     cursor: pointer;
-    fill: rgb(23 23 23 / 80%);
+    fill: #D65657;
+    stroke: rgba(245, 242, 242, 0.5);
+    stroke-width: 1px;
+    transition: transform 0.3s ease, fill 0.3s ease;
+}
+
+svg.menu > g.center:hover > path {
+    fill: rgba(214, 86, 87, 0.71);
+    stroke: #D65657;
+    stroke-width: 0.5px;
+    filter: drop-shadow(0px 0px 10px rgba(214, 86, 87, 0.8));
+    transform: scale(1.05);
 }
 
 svg.menu > g.center > text,
 svg.menu > g.center > use {
     margin-top: 5px;
-    font-size: 2.5px;
+    font-size: 3px;
     cursor: pointer;
     fill: white;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+    animation-delay: 0.3s;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+svg.menu > g.sector > use,
+svg.menu > g.center > use {
+    filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.5));
 }
