@@ -198,31 +198,22 @@ RadialMenu.prototype.createMenu = function (classValue, levelItems, nested) {
     var self = this;
     
     self.levelItems = levelItems;
-    
-    // Calculate how many items we have
     var menuItems = levelItems.length;
-    
-    // Create SVG
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', classValue);
-    svg.setAttribute('style', 'transform: scale(1.8)'); // Increased from 1.3 to 1.5
+    svg.setAttribute('style', 'transform: scale(1.8)');
     
-    // Parameters for the hexagons
-    var hexSize = 40; // Increased from 35 to 40
+    var hexSize = 40;
     var hexHeight = hexSize * Math.sqrt(3);
-    var ringSpacing = hexHeight * 1.05; // Slightly increased spacing ratio for better visual separation
+    var ringSpacing = hexHeight * 1.05;
     
-    // Calculate viewport size based on a fixed number of rings to ensure consistent size
-    // Instead of calculating rings needed, we'll use a fixed number for consistency
-    var fixedRings = 3; // Set a fixed number of rings for all menus
+    var fixedRings = 3;
     
-    // Fixed viewBox size regardless of item count
-    var viewBoxSize = (fixedRings * ringSpacing) + 15; // Increased padding from 10 to 15
+    var viewBoxSize = (fixedRings * ringSpacing) + 15;
     svg.setAttribute('viewBox', `-${viewBoxSize} -${viewBoxSize} ${viewBoxSize*2} ${viewBoxSize*2}`);
     svg.setAttribute('width', self.size);
     svg.setAttribute('height', self.size);
     
-    // Add filter for drop shadow effect
     var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
     filter.setAttribute('id', 'drop-shadow');
@@ -260,7 +251,6 @@ RadialMenu.prototype.createMenu = function (classValue, levelItems, nested) {
     defs.appendChild(filter);
     svg.appendChild(defs);
     
-    // Create hexagon path generator function
     function createHexagonPath(centerX, centerY, size) {
         var points = [];
         for (var i = 0; i < 6; i++) {
@@ -273,35 +263,21 @@ RadialMenu.prototype.createMenu = function (classValue, levelItems, nested) {
         return "M" + points.join("L") + "Z";
     }
     
-    // Generate all hexagon positions for the honeycomb
     function generateHexPositions() {
         var positions = [];
         
-        // Add center position
         positions.push({x: 0, y: 0, ring: 0});
         
-        // Always generate positions for the fixed number of rings
         for (var ring = 1; ring <= fixedRings; ring++) {
-            // For each side of the hexagon (6 sides)
             for (var side = 0; side < 6; side++) {
-                // For each position along this side
                 for (var pos = 0; pos < ring; pos++) {
-                    // Calculate the corner positions
                     var startAngle = (side * 60) * (Math.PI / 180);
                     var endAngle = ((side + 1) * 60) * (Math.PI / 180);
-                    
-                    // Distance from center
                     var radius = ring * ringSpacing;
-                    
-                    // Starting corner position
                     var startX = radius * Math.cos(startAngle);
                     var startY = radius * Math.sin(startAngle);
-                    
-                    // Ending corner position
                     var endX = radius * Math.cos(endAngle);
                     var endY = radius * Math.sin(endAngle);
-                    
-                    // Calculate position along the side
                     var ratio = pos / ring;
                     var x = startX + ratio * (endX - startX);
                     var y = startY + ratio * (endY - startY);
@@ -314,54 +290,46 @@ RadialMenu.prototype.createMenu = function (classValue, levelItems, nested) {
         return positions;
     }
     
-    // Generate positions
     var hexPositions = generateHexPositions();
     
-    // First create the center hexagon
     var centerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     centerG.setAttribute('class', 'center');
     
     var centerHexPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     centerHexPath.setAttribute('d', createHexagonPath(0, 0, hexSize));
     centerHexPath.setAttribute('class', 'center-fill');
-    centerHexPath.setAttribute('fill', '#D65657'); // Ensure red color for center
+    centerHexPath.setAttribute('fill', '#D65657');
     centerG.appendChild(centerHexPath);
     
-    // Add the icon to the center - use back-arrow icon if nested, otherwise use times-circle
     var iconType = nested ? 'arrow-left' : 'times-circle';
     var centerIcon = self.createUseTag(0, 0, iconType, centerG, true);
-    // Increase center icon size
     if (centerIcon) {
-        centerIcon.setAttribute('transform', 'scale(1.6)'); // Increased from 1.5 to 1.6
+        centerIcon.setAttribute('transform', 'scale(1.6)');
     }
     centerG.appendChild(centerIcon);
     
     svg.appendChild(centerG);
     
-    // Function to determine font size based on text length
     function calculateFontSize(text) {
         var wordCount = text.split(' ').length;
         var length = text.length;
         
         if (wordCount > 3) {
-            return "7px"; // Increased from 6px to 7px for more than 3 words
+            return "7px";
         } else if (length > 10) {
-            return "6px"; // Increased from 6px to 8px for longer text
+            return "6px";
         } else {
-            return "10px"; // Increased from 9px to 10px for default font size
+            return "10px";
         }
     }
     
-    // Create all the menu item hexagons, but limit to actual menu items
+
     var itemCount = 0;
     
-    // If we have only one item, place it in the first ring at the top position (60 degrees)
     if (menuItems === 1) {
-        // Find the top position in the first ring
         var topPos = null;
         for (var i = 1; i < hexPositions.length; i++) {
             if (hexPositions[i].ring === 1) {
-                // This is an approximation for the top position (y should be most negative)
                 if (topPos === null || hexPositions[i].y < topPos.y) {
                     topPos = hexPositions[i];
                 }
@@ -373,9 +341,7 @@ RadialMenu.prototype.createMenu = function (classValue, levelItems, nested) {
             itemCount = 1;
         }
     } else {
-        // For multiple items, distribute them evenly
         for (var i = 1; i < hexPositions.length && itemCount < menuItems; i++) {
-            // For better distribution, we'll place items starting from ring 1
             if (hexPositions[i].ring > 0) {
                 createHexagonItem(hexPositions[i], levelItems[itemCount], itemCount);
                 itemCount++;
@@ -383,71 +349,55 @@ RadialMenu.prototype.createMenu = function (classValue, levelItems, nested) {
         }
     }
     
-    // Function to create a hexagon menu item
-// Function to create a hexagon menu item
 function createHexagonItem(pos, item, index) {
-    // Create group for the hexagon cell
     var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('class', 'sector');
     g.setAttribute('data-index', index);
     
-    // Create the hexagon shape
     var hexPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     hexPath.setAttribute('d', createHexagonPath(pos.x, pos.y, hexSize));
     hexPath.setAttribute('class', 'sector-fill');
     
     g.appendChild(hexPath);
     
-    // Add icon if exists
     if (item.icon) {
-        var iconSvg = self.createUseTag(pos.x, pos.y - 6, item.icon, g, false); // Moved up more (from -5 to -6)
-        // Increase icon size
+        var iconSvg = self.createUseTag(pos.x, pos.y - 6, item.icon, g, false);
         if (iconSvg) {
-            iconSvg.setAttribute('transform', 'scale(1.5)'); // Increased from 1.4 to 1.5
+            iconSvg.setAttribute('transform', 'scale(1.5)');
         }
         g.appendChild(iconSvg);
     }
     
-    // Add title with multi-line support
     if (item.title) {
-        // Split the text into words
         var words = item.title.split(' ');
         
-        // Format text into multiple lines when needed
         if (words.length > 3) {
-            // For longer phrases, split into multiple lines
             var midpoint = Math.ceil(words.length / 2);
             var firstLine = words.slice(0, midpoint).join(' ');
             var secondLine = words.slice(midpoint).join(' ');
-            
-            // Create first line
             var titleLine1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             titleLine1.setAttribute('class', 'sector-title');
             titleLine1.setAttribute('x', pos.x);
-            titleLine1.setAttribute('y', pos.y + 8); // Adjusted position for first line
+            titleLine1.setAttribute('y', pos.y + 8);
             titleLine1.setAttribute('text-anchor', 'middle');
-            titleLine1.setAttribute('font-size', '9px'); // Consistent font size for multi-line
+            titleLine1.setAttribute('font-size', '9px');
             titleLine1.textContent = firstLine;
             g.appendChild(titleLine1);
-            
-            // Create second line
             var titleLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             titleLine2.setAttribute('class', 'sector-title');
             titleLine2.setAttribute('x', pos.x);
-            titleLine2.setAttribute('y', pos.y + 20); // Adjusted position for second line
+            titleLine2.setAttribute('y', pos.y + 20);
             titleLine2.setAttribute('text-anchor', 'middle');
-            titleLine2.setAttribute('font-size', '9px'); // Consistent font size for multi-line
+            titleLine2.setAttribute('font-size', '9px');
             titleLine2.textContent = secondLine;
             g.appendChild(titleLine2);
         } else {
-            // Single line rendering for shorter text
             var title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             title.setAttribute('class', 'sector-title');
             title.setAttribute('x', pos.x);
-            title.setAttribute('y', pos.y + 16); // Original position for single line
+            title.setAttribute('y', pos.y + 16);
             title.setAttribute('text-anchor', 'middle');
             
-            // Calculate font size directly based on text length
             var fontSize = calculateFontSize(item.title);
             title.setAttribute('font-size', fontSize);
             
@@ -459,12 +409,10 @@ function createHexagonItem(pos, item, index) {
     svg.appendChild(g);
 }
     
-    // Add event listeners
     svg.addEventListener('mousedown', function (event) {
         var target = event.target;
         var parent = target.parentNode;
         
-        // Handle clicks on SVG path elements inside the icons
         if (target.tagName === 'path' && parent && parent.tagName === 'svg') {
             parent = parent.parentNode;
         }
@@ -487,7 +435,6 @@ function createHexagonItem(pos, item, index) {
         var target = event.target;
         var parent = target.parentNode;
         
-        // Handle clicks on SVG path elements inside the icons
         if (target.tagName === 'path' && parent && parent.tagName === 'svg') {
             parent = parent.parentNode;
         }
